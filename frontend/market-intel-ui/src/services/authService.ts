@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -8,6 +8,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000,
 });
 
 // Add request interceptor to add auth token to requests
@@ -27,9 +28,14 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     // Handle 401 Unauthorized errors (token expired)
-    if (error.response && error.response.status === 401) {
+    if (error.response?.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
+    }
+    // Handle network errors
+    if (!error.response) {
+      console.error('Network error:', error);
+      throw new Error('Network error occurred. Please check your connection.');
     }
     return Promise.reject(error);
   }
@@ -58,74 +64,84 @@ export interface ApiKeys {
 
 export const authService = {
   async login(email: string, password: string): Promise<LoginResponse> {
-    const formData = new FormData();
-    formData.append('username', email);
-    formData.append('password', password);
-    
-    const response = await api.post('/token', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    
-    // Simulate user data in response since our backend doesn't return it with token
-    return {
-      ...response.data,
-      user: {
-        email,
-      },
-    };
+    try {
+      const formData = new FormData();
+      formData.append('username', email);
+      formData.append('password', password);
+      
+      const response = await api.post('/token', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   },
   
   async register(email: string, password: string, fullName?: string): Promise<User> {
-    const response = await api.post('/users', {
-      email,
-      password,
-      full_name: fullName,
-    });
-    return response.data;
+    try {
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('password', password);
+      if (fullName) {
+        formData.append('full_name', fullName);
+      }
+      
+      const response = await api.post('/users', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   },
   
   async getCurrentUser(): Promise<User> {
-    const response = await api.get('/users/me');
-    return response.data;
+    try {
+      const response = await api.get('/users/me');
+      return response.data;
+    } catch (error) {
+      console.error('Get current user error:', error);
+      throw error;
+    }
   },
   
   async forgotPassword(email: string): Promise<void> {
-    await api.post('/reset-password', { email });
+    try {
+      await api.post('/reset-password', { email });
+    } catch (error) {
+      console.error('Password reset error:', error);
+      throw error;
+    }
   },
 };
 
 export const apiKeyService = {
   async getApiKeys(): Promise<ApiKeys> {
-    const response = await api.get('/api-keys');
-    return response.data;
+    try {
+      const response = await api.get('/api-keys');
+      return response.data;
+    } catch (error) {
+      console.error('Get API keys error:', error);
+      throw error;
+    }
   },
   
   async setApiKeys(apiKeys: ApiKeys): Promise<void> {
-    await api.post('/api-keys', apiKeys);
-  },
-};
-
-export interface MarketIntelligenceQuery {
-  query: string;
-  market_domain: string;
-}
-
-export interface SpecificQuestion {
-  question: string;
-  state_id: string;
-}
-
-export const marketIntelligenceService = {
-  async processQuery(query: MarketIntelligenceQuery): Promise<any> {
-    const response = await api.post('/market-intelligence', query);
-    return response.data;
-  },
-  
-  async answerQuestion(question: SpecificQuestion): Promise<any> {
-    const response = await api.post('/specific-question', question);
-    return response.data;
+    try {
+      await api.post('/api-keys', apiKeys);
+    } catch (error) {
+      console.error('Set API keys error:', error);
+      throw error;
+    }
   },
 };
 
