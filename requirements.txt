@@ -1,0 +1,44 @@
+# Market Intelligence Agent - Requirements
+
+## Python Dependencies
+```
+fastapi==0.110.0
+uvicorn==0.27.1
+langchain==0.1.9
+langchain-community==0.0.19
+pydantic==2.6.1
+python-multipart==0.0.9
+passlib==1.7.4
+python-jose[cryptography]==3.3.0
+bcrypt==4.1.2
+chromadb==0.4.22
+```
+
+## Frontend Dependencies
+All frontend dependencies are managed through package.json in the frontend/market-intel-ui directory.
+
+## Installation
+Run the setup.sh script to install all dependencies and start the application:
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+## Configuration
+Create a .env file in the root directory with the following variables:
+
+```
+SECRET_KEY=your_jwt_secret_key
+GOOGLE_API_KEY=your_google_api_key
+NEWSAPI_KEY=your_newsapi_key
+ALPHA_VANTAGE_KEY=your_alpha_vantage_key
+TAVILY_API_KEY=your_tavily_api_key
+```
+
+## Default Credentials
+- **Email**: test@example.com
+- **Password**: password
+
+- **Admin Email**: marketintelligenceagent@gmail.com
+- **Admin Password**: admin123
