@@ -8,7 +8,7 @@ import { apiKeyService, ApiKeys } from '../../services/authService';
 const DataIntegrationPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('data-sources');
   const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<ApiKeys>();
+  const { register, handleSubmit, setValue } = useForm<ApiKeys>();
 
   useEffect(() => {
     const fetchApiKeys = async () => {

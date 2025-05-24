@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 
 const PasswordResetService: React.FC = () => {

@@ -6,7 +6,7 @@ import Header from '../../components/layout/Header';
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">

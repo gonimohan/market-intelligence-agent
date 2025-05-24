@@ -13,7 +13,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, fullName?: string) => Promise<void>;
+  register: (email: string, password: string, fullName?: string) => Promise<User>;
   logout: () => void;
   forgotPassword: (email: string) => Promise<void>;
 }
@@ -75,7 +75,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const userData = await authService.register(email, password, fullName);
       toast.success('Registration successful! Please log in.');
-      navigate('/login');
       return userData;
     } catch (error) {
       console.error('Registration failed:', error);

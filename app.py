@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
-import jwt
+import jwt  # Changed from from jose import jwt
 from passlib.context import CryptContext
 import json
 
@@ -100,7 +100,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(payload=to_encode, key=SECRET_KEY, algorithm=ALGORITHM)  # Modified
     return encoded_jwt
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -110,12 +110,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(jwt=token, key=SECRET_KEY, algorithms=[ALGORITHM])  # Modified
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
         token_data = TokenData(email=email)
-    except jwt.PyJWTError:
+    except jwt.exceptions.PyJWTError:  # Modified
         raise credentials_exception
     user = get_user(users_db, email=token_data.email)
     if user is None:
@@ -338,7 +338,8 @@ async def get_analysis_result(
     )
 
 # Serve static files for the frontend
-app.mount("/", StaticFiles(directory="frontend/market-intel-ui/build", html=True), name="static")
+FRONTEND_BUILD_DIR = os.path.abspath("frontend/market-intel-ui/dist")
+app.mount("/", StaticFiles(directory=FRONTEND_BUILD_DIR, html=True), name="static")
 
 # Add a test user for development
 @app.on_event("startup")

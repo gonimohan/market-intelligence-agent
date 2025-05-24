@@ -4,7 +4,7 @@ import Header from '../../components/layout/Header';
 
 const DownloadsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [reports, setReports] = useState([
+  const [reports, ] = useState([
     {
       id: 1,
       title: 'Market Trends Analysis - Q1 2025',
